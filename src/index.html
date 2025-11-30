@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinSight - Smart Financial Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- AI Chat Widget -->
+    <div id="chat-widget" class="chat-widget hidden">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-avatar">
+                    <i data-lucide="sparkles"></i>
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="chat-header-info">
+                    <h3>AI Financial Assistant</h3>
+                    <p>Online • Siap membantu</p>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button id="minimize-chat" class="chat-header-btn">
+                    <i data-lucide="minimize-2"></i>
+                </button>
+                <button id="close-chat" class="chat-header-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Body (hideable when minimized) -->
+        <div id="chat-body" class="chat-body">
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="chat-messages">
+                <!-- Messages will be inserted here -->
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typing-indicator" class="typing-indicator hidden">
+                <div class="typing-bubble">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" data-text="Cek Budget Saya">
+                    <i data-lucide="pie-chart"></i>
+                    Cek Budget Saya
+                </button>
+                <button class="quick-action-btn" data-text="Tips Hemat">
+                    <i data-lucide="lightbulb"></i>
+                    Tips Hemat
+                </button>
+                <button class="quick-action-btn" data-text="Update Goal">
+                    <i data-lucide="target"></i>
+                    Update Goal
+                </button>
+                <button class="quick-action-btn" data-text="Laporan Bulanan">
+                    <i data-lucide="bar-chart-3"></i>
+                    Laporan Bulanan
+                </button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Tanya tentang keuangan Anda...">
+                <button id="send-message" class="send-btn">
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Chat Button -->
+    <button id="open-chat" class="floating-chat-btn">
+        <i data-lucide="message-circle"></i>
+        <div class="notification-badge">1</div>
+    </button>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button id="toggle-sidebar" class="nav-btn">
+                    <i data-lucide="menu" id="menu-icon"></i>
+                </button>
+                <h1 class="logo">FinSight</h1>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" placeholder="Search transactions..." class="search-input">
+                </div>
+                <button class="nav-btn notification-btn">
+                    <i data-lucide="bell"></i>
+                    <span class="nav-badge"></span>
+                </button>
+                <button class="nav-btn">
+                    <i data-lucide="user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <nav class="sidebar-nav">
+                <button class="menu-item active" data-menu="dashboard">
+                    <i data-lucide="home"></i>
+                    <span>Dashboard & Overview</span>
+                </button>
+                <button class="menu-item" data-menu="transactions">
+                    <i data-lucide="dollar-sign"></i>
+                    <span>Manajemen Transaksi</span>
+                </button>
+                <button class="menu-item" data-menu="budget">
+                    <i data-lucide="pie-chart"></i>
+                    <span>Manajemen Anggaran</span>
+                </button>
+                <button class="menu-item" data-menu="goals">
+                    <i data-lucide="target"></i>
+                    <span>Financial Goals Tracker</span>
+                </button>
+                <button class="menu-item" data-menu="insights">
+                    <i data-lucide="lightbulb"></i>
+                    <span>Financial Insights Basic</span>
+                </button>
+                <button class="menu-item" data-menu="multi-wallet">
+                    <i data-lucide="wallet"></i>
+                    <span>Multi-Wallet Support</span>
+                </button>
+                <button class="menu-item" data-menu="recurring">
+                    <i data-lucide="repeat"></i>
+                    <span>Recurring Transactions</span>
+                </button>
+                <button class="menu-item" data-menu="visualization">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Data Visualization Enhanced</span>
+                </button>
+                <button class="menu-item" data-menu="export">
+                    <i data-lucide="download"></i>
+                    <span>Export</span>
+                </button>
+                <button class="menu-item" data-menu="notifications">
+                    <i data-lucide="bell"></i>
+                    <span>Notification Center</span>
+                </button>
+                <button class="menu-item" data-menu="profile">
+                    <i data-lucide="user"></i>
+                    <span>User Profile & Preferences</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content">
+            <!-- Dashboard Content -->
+            <div id="dashboard-content" class="content-section active">
+                <!-- Financial Health Score -->
+                <div class="health-score-card">
+                    <div class="health-score-header">
+                        <div class="health-score-info">
+                            <h2>Financial Health Score</h2>
+                            <p>Kondisi keuangan Anda saat ini</p>
+                        </div>
+                        <div class="health-score-value">
+                            <div class="score-number">78</div>
+                            <div class="score-max">/ 100</div>
+                        </div>
+                    </div>
+                    <div class="health-score-bar">
+                        <div class="health-score-progress" style="width: 78%"></div>
+                    </div>
+                    <div class="health-score-metrics">
+                        <div class="metric">
+                            <div class="metric-label">Savings Rate</div>
+                            <div class="metric-value">32%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Debt Ratio</div>
+                            <div class="metric-value">15%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Emergency Fund</div>
+                            <div class="metric-value">3.2 months</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Cash Flow -->
+                <div class="card">
+                    <h3 class="card-title">Monthly Cash Flow</h3>
+                    <div class="cash-flow-chart">
+                        <div class="cash-flow-row">
+                            <div class="month-label">Jan</div>
+                            <div class="bars-container">
+                                <div class="income-bar" style="width: 83%">
+                                    <span>Rp 5.0jt</span>
+                                </div>
+                                <div class="expense-bar" style="width: 58%">
+                                    <span>Rp 3.5jt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cash-flow-row">
+                            <div class="month-label">Feb</div>
+                            <div class="bars-container">
+                                <div class="income-bar" style="width: 87%">
+                                    <span>Rp 5.2jt</span>
+                                </div>
+                                <div class="expense-bar" style="width: 63%">
+                                    <span>Rp 3.8jt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cash-flow-row">
+                            <div class="month-label">Mar</div>
+                            <div class="bars-container">
+                                <div class="income-bar" style="width: 83%">
+                                    <span>Rp 5.0jt</span>
+                                </div>
+                                <div class="expense-bar" style="width: 70%">
+                                    <span>Rp 4.2jt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cash-flow-row">
+                            <div class="month-label">Apr</div>
+                            <div class="bars-container">
+                                <div class="income-bar" style="width: 92%">
+                                    <span>Rp 5.5jt</span>
+                                </div>
+                                <div class="expense-bar" style="width: 65%">
+                                    <span>Rp 3.9jt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cash-flow-row">
+                            <div class="month-label">May</div>
+                            <div class="bars-container">
+                                <div class="income-bar" style="width: 88%">
+                                    <span>Rp 5.3jt</span>
+                                </div>
+                                <div class="expense-bar" style="width: 68%">
+                                    <span>Rp 4.1jt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color income"></div>
+                            <span>Income</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color expense"></div>
+                            <span>Expense</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Progress -->
+                <div class="card">
+                    <h3 class="card-title">Budget Progress</h3>
+                    <div class="budget-list">
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <span class="budget-name">Makanan</span>
+                                <span class="budget-amount">Rp 1,850k / Rp 2,000k</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-progress danger" style="width: 92.5%">
+                                    <i data-lucide="alert-circle" class="budget-warning"></i>
+                                </div>
+                            </div>
+                            <div class="budget-percentage">92.5% terpakai</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <span class="budget-name">Transport</span>
+                                <span class="budget-amount">Rp 650k / Rp 1,000k</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-progress success" style="width: 65%"></div>
+                            </div>
+                            <div class="budget-percentage">65% terpakai</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <span class="budget-name">Hiburan</span>
+                                <span class="budget-amount">Rp 480k / Rp 500k</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-progress danger" style="width: 96%">
+                                    <i data-lucide="alert-circle" class="budget-warning"></i>
+                                </div>
+                            </div>
+                            <div class="budget-percentage">96% terpakai</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <span class="budget-name">Belanja</span>
+                                <span class="budget-amount">Rp 1,200k / Rp 1,500k</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-progress warning" style="width: 80%"></div>
+                            </div>
+                            <div class="budget-percentage">80% terpakai</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Goals -->
+                <div class="card">
+                    <h3 class="card-title">Financial Goals</h3>
+                    <div class="goals-list">
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-info">
+                                    <h4>Laptop Baru</h4>
+                                    <p>Target: 2024-12-31</p>
+                                </div>
+                                <div class="goal-amount">
+                                    <div class="goal-current">Rp 8.5jt</div>
+                                    <div class="goal-target">/ Rp 15jt</div>
+                                </div>
+                            </div>
+                            <div class="goal-bar">
+                                <div class="goal-progress" style="width: 56.7%"></div>
+                            </div>
+                            <div class="goal-percentage">56.7% tercapai</div>
+                        </div>
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-info">
+                                    <h4>Dana Darurat</h4>
+                                    <p>Target: 2025-06-30</p>
+                                </div>
+                                <div class="goal-amount">
+                                    <div class="goal-current">Rp 4.2jt</div>
+                                    <div class="goal-target">/ Rp 10jt</div>
+                                </div>
+                            </div>
+                            <div class="goal-bar">
+                                <div class="goal-progress" style="width: 42%"></div>
+                            </div>
+                            <div class="goal-percentage">42% tercapai</div>
+                        </div>
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-info">
+                                    <h4>Liburan</h4>
+                                    <p>Target: 2025-03-15</p>
+                                </div>
+                                <div class="goal-amount">
+                                    <div class="goal-current">Rp 3.8jt</div>
+                                    <div class="goal-target">/ Rp 5jt</div>
+                                </div>
+                            </div>
+                            <div class="goal-bar">
+                                <div class="goal-progress" style="width: 76%"></div>
+                            </div>
+                            <div class="goal-percentage">76% tercapai</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Recent Transactions</h3>
+                        <button class="view-all-btn">View All</button>
+                    </div>
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <div class="transaction-name">Warteg Bahari</div>
+                                <div class="transaction-meta">Makanan • Uang Saku</div>
+                            </div>
+                            <div class="transaction-amount expense">
+                                <div class="amount">-Rp 25.000</div>
+                                <div class="date">2024-11-28</div>
+                            </div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <div class="transaction-name">Grab</div>
+                                <div class="transaction-meta">Transport • E-Wallet</div>
+                            </div>
+                            <div class="transaction-amount expense">
+                                <div class="amount">-Rp 35.000</div>
+                                <div class="date">2024-11-27</div>
+                            </div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon income">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <div class="transaction-name">Gaji Freelance</div>
+                                <div class="transaction-meta">Income • Tabungan</div>
+                            </div>
+                            <div class="transaction-amount income">
+                                <div class="amount">+Rp 1.500.000</div>
+                                <div class="date">2024-11-26</div>
+                            </div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <div class="transaction-name">Netflix</div>
+                                <div class="transaction-meta">Hiburan • E-Wallet</div>
+                            </div>
+                            <div class="transaction-amount expense">
+                                <div class="amount">-Rp 54.000</div>
+                                <div class="date">2024-11-25</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="insights-card">
+                    <div class="insights-header">
+                        <i data-lucide="lightbulb"></i>
+                        <h3>AI Financial Insights</h3>
+                    </div>
+                    <div class="insights-list">
+                        <div class="insight-item warning">
+                            <div class="insight-icon">
+                                <i data-lucide="alert-circle"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">Spending Pattern Alert</div>
+                                <p>Pengeluaran weekend Anda 30% lebih tinggi dari weekday. Pertimbangkan untuk mengurangi makan di luar.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item success">
+                            <div class="insight-icon">
+                                <i data-lucide="check-circle"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">Savings Opportunity</div>
+                                <p>Anda bisa hemat Rp 500.000 per bulan dengan mengurangi langganan yang tidak terpakai dan batch cooking.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item info">
+                            <div class="insight-icon">
+                                <i data-lucide="bell"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">Bill Reminder</div>
+                                <p>Bulan depan ada tagihan listrik sekitar Rp 400.000 dan BPJS Rp 150.000.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder for other sections -->
+            <div id="placeholder-content" class="content-section">
+                <div class="placeholder-card">
+                    <i data-lucide="bar-chart-3" class="placeholder-icon"></i>
+                    <h3 id="placeholder-title">Fitur</h3>
+                    <p>Fitur ini sedang dalam pengembangan</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
