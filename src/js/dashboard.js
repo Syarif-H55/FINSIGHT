@@ -1,25 +1,12 @@
-/**
- * FinSight - Smart Financial Management
- * JavaScript Application
- */
-
-// ============================================
-// DOM Elements
-// ============================================
 const elements = {
-    // Navigation
     toggleSidebar: document.getElementById('toggle-sidebar'),
     sidebar: document.getElementById('sidebar'),
     mainContent: document.getElementById('main-content'),
     menuItems: document.querySelectorAll('.menu-item'),
     menuIcon: document.getElementById('menu-icon'),
-    
-    // Content Sections
     dashboardContent: document.getElementById('dashboard-content'),
     placeholderContent: document.getElementById('placeholder-content'),
     placeholderTitle: document.getElementById('placeholder-title'),
-    
-    // Chat Widget
     chatWidget: document.getElementById('chat-widget'),
     chatBody: document.getElementById('chat-body'),
     chatMessages: document.getElementById('chat-messages'),
@@ -32,9 +19,6 @@ const elements = {
     quickActionBtns: document.querySelectorAll('.quick-action-btn')
 };
 
-// ============================================
-// State Management
-// ============================================
 const state = {
     sidebarOpen: true,
     activeMenu: 'dashboard',
@@ -54,7 +38,7 @@ const state = {
 // Menu Items Data
 // ============================================
 const menuTitles = {
-    'dashboard': 'Dashboard & Overview',
+    'dashboard': 'Dashboard',
     'transactions': 'Manajemen Transaksi',
     'budget': 'Manajemen Anggaran',
     'goals': 'Financial Goals Tracker',
@@ -65,6 +49,182 @@ const menuTitles = {
     'export': 'Export',
     'notifications': 'Notification Center',
     'profile': 'User Profile & Preferences'
+};
+
+// ============================================
+// Data Models
+// ============================================
+const appData = {
+    // Menu configuration
+    menuItems: [
+        { id: 'dashboard', icon: 'home', label: 'Dashboard' },
+        { id: 'transactions', icon: 'dollar-sign', label: 'Manajemen Transaksi' },
+        { id: 'budget', icon: 'pie-chart', label: 'Manajemen Anggaran' },
+        { id: 'goals', icon: 'target', label: 'Financial Goals Tracker' },
+        { id: 'insights', icon: 'lightbulb', label: 'Financial Insights Basic' },
+        { id: 'multi-wallet', icon: 'wallet', label: 'Multi-Wallet Support' },
+        { id: 'recurring', icon: 'repeat', label: 'Recurring Transactions' },
+        { id: 'visualization', icon: 'bar-chart-3', label: 'Data Visualization Enhanced' },
+        { id: 'export', icon: 'download', label: 'Export' },
+        { id: 'notifications', icon: 'bell', label: 'Notification Center' },
+        { id: 'profile', icon: 'user', label: 'User Profile & Preferences' }
+    ],
+
+    // Cash flow data
+    cashFlow: [],
+
+    // Budget data
+    budgets: [],
+
+    // Financial goals
+    goals: [],
+
+    // Transactions
+    transactions: [],
+
+    // AI Insights
+    insights: [],
+
+    // Quick actions
+    quickActions: [
+        { icon: 'pie-chart', text: 'Cek Budget Saya' },
+        { icon: 'lightbulb', text: 'Tips Hemat' },
+        { icon: 'target', text: 'Update Goal' },
+        { icon: 'bar-chart-3', text: 'Laporan Bulanan' }
+    ]
+};
+
+// ============================================
+// Renderer Functions
+// ============================================
+const renderers = {
+    // Format currency
+    formatCurrency(amount) {
+        if (amount >= 1000000) {
+            return `Rp ${(amount / 1000000).toFixed(1)}jt`;
+        }
+        return `Rp ${(amount / 1000).toLocaleString('id-ID')}`;
+    },
+
+    // Calculate percentage
+    calculatePercentage(current, total) {
+        return ((current / total) * 100).toFixed(1);
+    },
+
+    // Render menu item
+    renderMenuItem(item, isActive = false) {
+        return `
+      <button class="menu-item ${isActive ? 'active' : ''}" data-menu="${item.id}">
+        <i data-lucide="${item.icon}"></i>
+        <span>${item.label}</span>
+      </button>
+    `;
+    },
+
+    // Render cash flow row
+    renderCashFlowRow(data) {
+        return `
+      <div class="cash-flow-row">
+        <div class="month-label">${data.month}</div>
+        <div class="bars-container">
+          <div class="income-bar" style="width: ${data.income.percent}%">
+            <span>${this.formatCurrency(data.income.amount)}</span>
+          </div>
+          <div class="expense-bar" style="width: ${data.expense.percent}%">
+            <span>${this.formatCurrency(data.expense.amount)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    },
+
+    // Render budget item
+    renderBudgetItem(budget) {
+        const percentage = this.calculatePercentage(budget.current, budget.limit);
+        return `
+      <div class="budget-item">
+        <div class="budget-header">
+          <span class="budget-name">${budget.name}</span>
+          <span class="budget-amount">${this.formatCurrency(budget.current)} / ${this.formatCurrency(budget.limit)}</span>
+        </div>
+        <div class="budget-bar">
+          <div class="budget-progress ${budget.status}" style="width: ${percentage}%">
+            ${budget.showWarning ? '<i data-lucide="alert-circle" class="budget-warning"></i>' : ''}
+          </div>
+        </div>
+        <div class="budget-percentage">${percentage}% terpakai</div>
+      </div>
+    `;
+    },
+
+    // Render goal
+    renderGoal(goal) {
+        const percentage = this.calculatePercentage(goal.current, goal.goal);
+        return `
+      <div class="goal-item">
+        <div class="goal-header">
+          <div class="goal-info">
+            <h4>${goal.title}</h4>
+            <p>Target: ${goal.target}</p>
+          </div>
+          <div class="goal-amount">
+            <div class="goal-current">${this.formatCurrency(goal.current)}</div>
+            <div class="goal-target">/ ${this.formatCurrency(goal.goal)}</div>
+          </div>
+        </div>
+        <div class="goal-bar">
+          <div class="goal-progress" style="width: ${percentage}%"></div>
+        </div>
+        <div class="goal-percentage">${percentage}% tercapai</div>
+      </div>
+    `;
+    },
+
+    // Render transaction
+    renderTransaction(transaction) {
+        const icon = transaction.type === 'income' ? 'trending-up' : 'trending-down';
+        const sign = transaction.type === 'income' ? '+' : '';
+        return `
+      <div class="transaction-item">
+        <div class="transaction-icon ${transaction.type}">
+          <i data-lucide="${icon}"></i>
+        </div>
+        <div class="transaction-info">
+          <div class="transaction-name">${transaction.name}</div>
+          <div class="transaction-meta">${transaction.category} • ${transaction.wallet}</div>
+        </div>
+        <div class="transaction-amount ${transaction.type}">
+          <div class="amount">${sign}${this.formatCurrency(Math.abs(transaction.amount))}</div>
+          <div class="date">${transaction.date}</div>
+        </div>
+      </div>
+    `;
+    },
+
+    // Render insight
+    renderInsight(insight) {
+        return `
+      <div class="insight-item ${insight.type}">
+        <div class="insight-icon">
+          <i data-lucide="${insight.icon}"></i>
+        </div>
+        <div class="insight-content">
+          <div class="insight-title">${insight.title}</div>
+          <p>${insight.content}</p>
+        </div>
+      </div>
+    `;
+    },
+
+    // Render quick action
+    renderQuickAction(action) {
+        return `
+      <button class="quick-action-btn" data-text="${action.text}">
+        <i data-lucide="${action.icon}"></i>
+        ${action.text}
+      </button>
+    `;
+    }
 };
 
 // ============================================
@@ -318,8 +478,12 @@ function toggleSidebar() {
 
 function setActiveMenu(menuId) {
     state.activeMenu = menuId;
-    
-    // Update menu item styles
+
+    if (menuId === 'transactions') {
+        window.location.href = 'transactions.html';
+        return;
+    }
+
     elements.menuItems.forEach(item => {
         if (item.dataset.menu === menuId) {
             item.classList.add('active');
@@ -327,8 +491,7 @@ function setActiveMenu(menuId) {
             item.classList.remove('active');
         }
     });
-    
-    // Show/hide content sections
+
     if (menuId === 'dashboard') {
         elements.dashboardContent.classList.add('active');
         elements.placeholderContent.classList.remove('active');
@@ -337,9 +500,10 @@ function setActiveMenu(menuId) {
         elements.placeholderContent.classList.add('active');
         elements.placeholderTitle.textContent = menuTitles[menuId] || menuId;
     }
-    
-    // Re-initialize Lucide icons
-    lucide.createIcons();
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // ============================================
@@ -403,28 +567,157 @@ function initEventListeners() {
 }
 
 // ============================================
+// Data Rendering
+// ============================================
+function renderAllData() {
+    // Render menu items
+    const sidebarNav = document.getElementById('sidebar-nav');
+    if (sidebarNav) {
+        sidebarNav.innerHTML = appData.menuItems
+            .map((item, index) => renderers.renderMenuItem(item, index === 0))
+            .join('');
+    }
+
+    // Render cash flow
+    const cashFlowChart = document.getElementById('cash-flow-chart');
+    if (cashFlowChart) {
+        if (appData.cashFlow.length === 0) {
+            cashFlowChart.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">Belum ada data cash flow. Mulai tambahkan transaksi untuk melihat grafik.</p>';
+        } else {
+            cashFlowChart.innerHTML = appData.cashFlow
+                .map(data => renderers.renderCashFlowRow(data))
+                .join('');
+        }
+    }
+
+    // Render budgets
+    const budgetList = document.getElementById('budget-list');
+    if (budgetList) {
+        if (appData.budgets.length === 0) {
+            budgetList.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">Belum ada budget. Buat budget pertama Anda untuk mulai mengelola keuangan.</p>';
+        } else {
+            budgetList.innerHTML = appData.budgets
+                .map(budget => renderers.renderBudgetItem(budget))
+                .join('');
+        }
+    }
+
+    // Render goals
+    const goalsList = document.getElementById('goals-list');
+    if (goalsList) {
+        if (appData.goals.length === 0) {
+            goalsList.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">Belum ada goal keuangan. Tetapkan target finansial Anda sekarang!</p>';
+        } else {
+            goalsList.innerHTML = appData.goals
+                .map(goal => renderers.renderGoal(goal))
+                .join('');
+        }
+    }
+
+    // Render transactions
+    const transactionsList = document.getElementById('transactions-list');
+    if (transactionsList) {
+        if (appData.transactions.length === 0) {
+            transactionsList.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">Belum ada transaksi. Tambahkan transaksi pertama Anda!</p>';
+        } else {
+            transactionsList.innerHTML = appData.transactions
+                .map(transaction => renderers.renderTransaction(transaction))
+                .join('');
+        }
+    }
+
+    // Render insights
+    const insightsList = document.getElementById('insights-list');
+    if (insightsList) {
+        if (appData.insights.length === 0) {
+            insightsList.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">Belum ada insight. AI akan memberikan rekomendasi setelah Anda menambahkan transaksi.</p>';
+        } else {
+            insightsList.innerHTML = appData.insights
+                .map(insight => renderers.renderInsight(insight))
+                .join('');
+        }
+    }
+
+    // Render quick actions
+    const quickActions = document.getElementById('quick-actions');
+    if (quickActions) {
+        quickActions.innerHTML = appData.quickActions
+            .map(action => renderers.renderQuickAction(action))
+            .join('');
+    }
+
+    // Re-initialize Lucide Icons after rendering
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+// Attach event listeners to dynamically created elements
+function attachDynamicListeners() {
+    // Update menu items reference
+    elements.menuItems = document.querySelectorAll('.menu-item');
+
+    // Menu items
+    elements.menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            setActiveMenu(item.dataset.menu);
+        });
+    });
+
+    // Update quick action buttons reference
+    elements.quickActionBtns = document.querySelectorAll('.quick-action-btn');
+
+    // Quick actions
+    elements.quickActionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            elements.chatInput.value = btn.dataset.text;
+            elements.chatInput.focus();
+        });
+    });
+
+    // Re-initialize Lucide Icons after attaching listeners
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+// ============================================
 // Initialization
 // ============================================
 function init() {
     // Initialize Lucide icons
     lucide.createIcons();
-    
-    // Initialize event listeners
+
+    // Render all dynamic data
+    renderAllData();
+
+    // Re-initialize Lucide icons for dynamically rendered content
+    lucide.createIcons();
+
+    // Attach event listeners to dynamic elements
+    attachDynamicListeners();
+
+    // Initialize other event listeners
     initEventListeners();
-    
+
     // Render initial chat messages
     renderMessages();
-    
+
     // Set initial send button state
     elements.sendMessage.disabled = true;
-    
+
     // Check initial viewport
     if (window.innerWidth <= 1024) {
         elements.sidebar.classList.add('collapsed');
         elements.mainContent.classList.add('expanded');
         state.sidebarOpen = false;
     }
-    
+
+    // Initialize Lucide Icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
     console.log('FinSight initialized successfully!');
 }
 

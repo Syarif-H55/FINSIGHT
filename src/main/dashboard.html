@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinSight - Smart Financial Management</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="chat-widget" class="chat-widget hidden">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-avatar">
+                    <i data-lucide="sparkles"></i>
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="chat-header-info">
+                    <h3>AI Financial Assistant</h3>
+                    <p>Online • Siap membantu</p>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button id="minimize-chat" class="chat-header-btn">
+                    <i data-lucide="minimize-2"></i>
+                </button>
+                <button id="close-chat" class="chat-header-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="chat-body" class="chat-body">
+            <div id="chat-messages" class="chat-messages">
+            </div>
+
+            <div id="typing-indicator" class="typing-indicator hidden">
+                <div class="typing-bubble">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="quick-actions" id="quick-actions">
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Tanya tentang keuangan Anda...">
+                <button id="send-message" class="send-btn">
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button id="open-chat" class="floating-chat-btn">
+        <i data-lucide="message-circle"></i>
+        <div class="notification-badge">1</div>
+    </button>
+
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button id="toggle-sidebar" class="nav-btn">
+                    <i data-lucide="menu" id="menu-icon"></i>
+                </button>
+                <h1 class="logo">FINSIGHT</h1>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" placeholder="Search transactions..." class="search-input">
+                </div>
+                <button class="nav-btn notification-btn">
+                    <i data-lucide="bell"></i>
+                    <span class="nav-badge"></span>
+                </button>
+                <button class="nav-btn">
+                    <i data-lucide="user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <aside id="sidebar" class="sidebar">
+            <nav class="sidebar-nav" id="sidebar-nav">
+            </nav>
+        </aside>
+
+        <main id="main-content" class="main-content">
+            <div id="dashboard-content" class="content-section active">
+                <div class="health-score-card">
+                    <div class="health-score-header">
+                        <div class="health-score-info">
+                            <h2>Financial Health Score</h2>
+                            <p>Kondisi keuangan Anda saat ini</p>
+                        </div>
+                        <div class="health-score-value">
+                            <div class="score-number">78</div>
+                            <div class="score-max">/ 100</div>
+                        </div>
+                    </div>
+                    <div class="health-score-bar">
+                        <div class="health-score-progress" style="width: 78%"></div>
+                    </div>
+                    <div class="health-score-metrics">
+                        <div class="metric">
+                            <div class="metric-label">Savings Rate</div>
+                            <div class="metric-value">32%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Debt Ratio</div>
+                            <div class="metric-value">15%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Emergency Fund</div>
+                            <div class="metric-value">3.2 months</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Monthly Cash Flow</h3>
+                    <div class="cash-flow-chart" id="cash-flow-chart">
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color income"></div>
+                            <span>Income</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color expense"></div>
+                            <span>Expense</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Budget Progress</h3>
+                    <div class="budget-list" id="budget-list">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Financial Goals</h3>
+                    <div class="goals-list" id="goals-list">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Recent Transactions</h3>
+                        <button class="view-all-btn">View All</button>
+                    </div>
+                    <div class="transactions-list" id="transactions-list">
+                    </div>
+                </div>
+
+                <div class="insights-card">
+                    <div class="insights-header">
+                        <i data-lucide="lightbulb"></i>
+                        <h3>AI Financial Insights</h3>
+                    </div>
+                    <div class="insights-list" id="insights-list">
+                    </div>
+                </div>
+            </div>
+
+            <div id="placeholder-content" class="content-section">
+                <div class="placeholder-card">
+                    <i data-lucide="bar-chart-3" class="placeholder-icon"></i>
+                    <h3 id="placeholder-title">Fitur</h3>
+                    <p>Fitur ini sedang dalam pengembangan</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
