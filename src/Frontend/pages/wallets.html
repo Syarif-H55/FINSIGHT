@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallets - FINSIGHT</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">FINSIGHT</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="wallets.html">Wallets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transactions.html">Transactions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="budgets.html">Budgets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Wallets</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addWalletModal">
+                <i class="fas fa-plus"></i> Add Wallet
+            </button>
+        </div>
+
+        <!-- Wallets Grid -->
+        <div id="walletsContainer" class="row">
+            <!-- Wallets will be loaded here -->
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Wallet Modal -->
+    <div class="modal fade" id="addWalletModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addWalletForm">
+                        <div class="mb-3">
+                            <label for="walletName" class="form-label">Wallet Name</label>
+                            <input type="text" class="form-control" id="walletName" required
+                                placeholder="e.g. BCA, OVO, Cash">
+                        </div>
+                        <div class="mb-3">
+                            <label for="walletType" class="form-label">Type</label>
+                            <select class="form-select" id="walletType" required>
+                                <option value="bank">Bank Account</option>
+                                <option value="ewallet">E-Wallet</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="initialBalance" class="form-label">Initial Balance</label>
+                            <input type="number" class="form-control" id="initialBalance" required value="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Wallet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Wallet Modal -->
+    <div class="modal fade" id="editWalletModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editWalletForm">
+                        <input type="hidden" id="editWalletId">
+                        <div class="mb-3">
+                            <label for="editWalletName" class="form-label">Wallet Name</label>
+                            <input type="text" class="form-control" id="editWalletName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editWalletType" class="form-label">Type</label>
+                            <select class="form-select" id="editWalletType" required>
+                                <option value="bank">Bank Account</option>
+                                <option value="ewallet">E-Wallet</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBalance" class="form-label">Balance</label>
+                            <input type="number" class="form-control" id="editBalance" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Wallet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script> <!-- For Logout -->
+    <script src="../js/wallets.js"></script>
+</body>
+
+</html>
