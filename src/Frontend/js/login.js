@@ -1,7 +1,7 @@
 // Initialize Lucide icons
 lucide.createIcons();
 
-// Get DOM elements
+// Get DOM elementsaa
 const loginForm = document.getElementById('login-form');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
