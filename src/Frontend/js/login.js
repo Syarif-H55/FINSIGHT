@@ -1,165 +1,87 @@
-// Initialize Lucide icons
-lucide.createIcons();
+document.addEventListener('DOMContentLoaded', () => {
 
-// Get DOM elementsaa
-const loginForm = document.getElementById('login-form');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const togglePasswordBtn = document.getElementById('toggle-password');
-const rememberMeCheckbox = document.getElementById('remember-me');
-const loginBtn = document.getElementById('login-btn');
-const errorMessage = document.getElementById('error-message');
-const errorText = document.getElementById('error-text');
+    // Login Form Handler
+    const loginForm = document.getElementById('loginForm');
+    const messageBox = document.getElementById('message');
 
-// Toggle password visibility
-togglePasswordBtn.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-
-    const icon = togglePasswordBtn.querySelector('i');
-    icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-    lucide.createIcons();
-});
-
-// Show error message
-function showError(message) {
-    errorText.textContent = message;
-    errorMessage.classList.remove('hidden');
-    lucide.createIcons();
-}
-
-// Hide error message
-function hideError() {
-    errorMessage.classList.add('hidden');
-}
-
-// Validate email format
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// Handle form submission
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    hideError();
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const rememberMe = rememberMeCheckbox.checked;
-
-    // Validation
-    if (!email) {
-        showError('Email harus diisi');
-        emailInput.focus();
-        return;
+    // Auto-fill Email if Saved
+    const savedEmail = localStorage.getItem('finsight_saved_email');
+    if (savedEmail) {
+        const emailInput = document.getElementById('email');
+        const rememberCheckbox = document.getElementById('remember');
+        if (emailInput) emailInput.value = savedEmail;
+        if (rememberCheckbox) rememberCheckbox.checked = true;
     }
 
-    if (!isValidEmail(email)) {
-        showError('Format email tidak valid');
-        emailInput.focus();
-        return;
-    }
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-    if (!password) {
-        showError('Password harus diisi');
-        passwordInput.focus();
-        return;
-    }
+            // Clear previous errors
+            messageBox.classList.add('d-none');
+            messageBox.textContent = '';
 
-    if (password.length < 8) {
-        showError('Password minimal 8 karakter');
-        passwordInput.focus();
-        return;
-    }
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = loginForm.querySelector('button[type="submit"]');
 
-    // Show loading state
-    loginBtn.disabled = true;
-    loginBtn.classList.add('loading');
-    loginBtn.querySelector('span').textContent = 'Memproses...';
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-    try {
-        // Simulate API call (replace with actual API endpoint)
-        await simulateLogin(email, password, rememberMe);
+            // Basic Validation
+            if (!email || !password) {
+                showError('Email and Password are required.');
+                return;
+            }
 
-        // Success - redirect to dashboard
-        window.location.href = 'dashboard.html';
-    } catch (error) {
-        // Show error
-        showError(error.message || 'Login gagal. Silakan coba lagi.');
-
-        // Reset button state
-        loginBtn.disabled = false;
-        loginBtn.classList.remove('loading');
-        loginBtn.querySelector('span').textContent = 'Masuk';
-        lucide.createIcons();
-    }
-});
-
-// Simulate login API call (replace with actual API integration)
-async function simulateLogin(email, password, rememberMe) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // Demo credentials (replace with actual API call)
-            const demoEmail = 'user@finsight.com';
-            const demoPassword = 'password123';
-
-            if (email === demoEmail && password === demoPassword) {
-                // Save login state
-                if (rememberMe) {
-                    localStorage.setItem('finsight_user', JSON.stringify({
-                        email: email,
-                        loggedIn: true,
-                        loginTime: new Date().toISOString()
-                    }));
-                } else {
-                    sessionStorage.setItem('finsight_user', JSON.stringify({
-                        email: email,
-                        loggedIn: true,
-                        loginTime: new Date().toISOString()
-                    }));
-                }
-                resolve();
+            // Remember Me Logic (Save Email)
+            const rememberCheckbox = document.getElementById('remember');
+            if (rememberCheckbox && rememberCheckbox.checked) {
+                localStorage.setItem('finsight_saved_email', email);
             } else {
-                reject(new Error('Email atau password salah'));
+                localStorage.removeItem('finsight_saved_email');
             }
-        }, 1500);
-    });
-}
 
-// Check if user is already logged in
-function checkLoginStatus() {
-    const user = localStorage.getItem('finsight_user') || sessionStorage.getItem('finsight_user');
-    if (user) {
-        try {
-            const userData = JSON.parse(user);
-            if (userData.loggedIn) {
-                // Redirect to dashboard if already logged in
-                window.location.href = 'dashboard.html';
+            // UI Loading State
+            const originalBtnText = loginBtn.textContent;
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing In...';
+
+            try {
+                // Actual API Call
+                const result = await APIClient.post('/auth/login', { email, password });
+
+                if (result.success) {
+                    // Success: Store Token & User
+                    localStorage.setItem('finsight_token', result.data.token);
+                    localStorage.setItem('finsight_user', JSON.stringify(result.data.user));
+
+                    // Redirect to Dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // API Error (e.g. Wrong password)
+                    showError(result.message || 'Login failed.');
+                }
+            } catch (error) {
+                console.error("Login Error:", error);
+                showError('An error occurred. Please try again.');
+            } finally {
+                // Reset UI
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalBtnText;
             }
-        } catch (error) {
-            console.error('Error parsing user data:', error);
-        }
+        });
     }
-}
 
-// Check login status on page load
-checkLoginStatus();
+    function showError(msg) {
+        messageBox.textContent = msg;
+        messageBox.classList.remove('d-none');
+    }
 
-// Auto-fill email if remembered
-window.addEventListener('DOMContentLoaded', () => {
-    const rememberedUser = localStorage.getItem('finsight_user');
-    if (rememberedUser) {
-        try {
-            const userData = JSON.parse(rememberedUser);
-            emailInput.value = userData.email;
-            rememberMeCheckbox.checked = true;
-        } catch (error) {
-            console.error('Error parsing remembered user:', error);
-        }
+    // Check Auto-Login
+    const token = localStorage.getItem('finsight_token');
+    if (token) {
+        // Optional: Validate token with backend if needed, or just redirect
+        // window.location.href = 'dashboard.html'; 
     }
 });
-
-// Clear error on input
-emailInput.addEventListener('input', hideError);
-passwordInput.addEventListener('input', hideError);

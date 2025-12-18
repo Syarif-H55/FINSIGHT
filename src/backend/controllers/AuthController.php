@@ -26,7 +26,17 @@ class AuthController {
             $this->user->password = $data->password;
 
             if ($this->user->create()) {
-                Response::send(true, "User registered successfully.", [], 201);
+                // Create default profile for the new user
+                $query = "INSERT INTO user_profiles (user_id, monthly_income, average_expense, risk_appetite, financial_goals) VALUES (:uid, 0, 0, 'moderate', '')";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':uid', $this->user->user_id);
+                
+                if ($stmt->execute()) {
+                    Response::send(true, "User registered successfully.", [], 201);
+                } else {
+                    // If profile creation fails, consider rolling back user creation or logging an error
+                    Response::send(false, "User registered but failed to create profile.", [], 500); // Internal Server Error
+                }
             } else {
                 Response::send(false, "Email already exists or registration failed.", [], 400); // 400 Bad Request
             }

@@ -148,6 +148,30 @@ if (isset($uri[3])) {
         }
         exit();
     }
+
+    // PROFILE ROUTES (Protected)
+    if ($resource === 'profile') {
+        require_once 'middleware/AuthMiddleware.php';
+        require_once 'controllers/ProfileController.php';
+        
+        $authMiddleware = new AuthMiddleware();
+        $userData = $authMiddleware->validateToken();
+        $userId = $userData['user_id'];
+
+        $profileController = new ProfileController($userId);
+        
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        if ($method === 'GET') {
+            $profileController->getProfile();
+        } elseif ($method === 'POST') {
+            $profileController->updateProfile();
+        } else {
+            http_response_code(405);
+            echo json_encode(["message" => "Method Not Allowed"]);
+        }
+        exit();
+    }
     // Default successful response for root test
     if ($resource === 'test') {
         echo json_encode([

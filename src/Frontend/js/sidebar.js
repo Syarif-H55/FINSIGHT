@@ -50,7 +50,7 @@ class Sidebar {
                     {
                         name: 'Settings',
                         icon: 'fa-cog',
-                        url: '#',
+                        url: 'settings.html',
                         page: 'settings.html'
                     },
                     {
@@ -138,8 +138,8 @@ class Sidebar {
         if (!document.querySelector('.main-content')) {
             const existingContent = Array.from(document.body.children)
                 .filter(child => !child.classList.contains('sidebar') &&
-                                !child.classList.contains('sidebar-overlay') &&
-                                !child.classList.contains('mobile-menu-btn'));
+                    !child.classList.contains('sidebar-overlay') &&
+                    !child.classList.contains('mobile-menu-btn'));
 
             const mainContent = document.createElement('div');
             mainContent.className = 'main-content';

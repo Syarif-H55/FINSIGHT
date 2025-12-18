@@ -34,6 +34,7 @@ class User {
         $stmt->bindParam(':password', $this->password);
 
         if ($stmt->execute()) {
+            $this->user_id = $this->conn->lastInsertId();
             return true;
         }
         return false;
