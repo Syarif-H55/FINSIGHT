@@ -41,6 +41,12 @@ class Sidebar {
                         icon: 'fa-chart-pie',
                         url: 'budgets.html',
                         page: 'budgets.html'
+                    },
+                    {
+                        name: 'Insights',
+                        icon: 'fa-lightbulb',
+                        url: 'insights.html',
+                        page: 'insights.html'
                     }
                 ]
             },

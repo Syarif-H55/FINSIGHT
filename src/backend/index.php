@@ -192,6 +192,26 @@ if (isset($uri[3])) {
         }
         exit();
     }
+
+    // INSIGHTS ROUTES (Protected)
+    if ($resource === 'insights') {
+        require_once 'middleware/AuthMiddleware.php';
+        require_once 'controllers/InsightController.php';
+        
+        $authMiddleware = new AuthMiddleware();
+        $userData = $authMiddleware->validateToken();
+        $userId = $userData['user_id'];
+
+        $insightController = new InsightController($userId);
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $insightController->getInsights();
+        } else {
+            http_response_code(405);
+            echo json_encode(["message" => "Method Not Allowed"]);
+        }
+        exit();
+    }
     // Default successful response for root test
     if ($resource === 'test') {
         echo json_encode([
