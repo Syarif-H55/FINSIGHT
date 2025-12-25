@@ -1,0 +1,81 @@
+<!-- Floating Chat Bubble -->
+<div class="chat-bubble" id="chatBubble" title="AI Financial Advisor">
+    <i class="fas fa-robot"></i>
+    <span class="chat-bubble-badge" id="chatBubbleBadge"></span>
+</div>
+
+<!-- Floating Chat Panel -->
+<div class="chat-panel" id="chatPanel">
+    <!-- Chat Header -->
+    <div class="chat-panel-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar-small">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h6 class="chat-title">AI Financial Advisor</h6>
+                <span class="chat-status">
+                    <span class="status-dot"></span>
+                    Online
+                </span>
+            </div>
+        </div>
+        <div class="chat-header-actions">
+            <button class="chat-action-btn" id="clearChatBtn" title="Clear Chat">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+            <button class="chat-action-btn" id="closeChatBtn" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chatMessages">
+        <!-- Welcome Message -->
+        <div class="chat-message ai">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-bubble">
+                    <p>Halo! Saya AI Financial Advisor Anda. Saya siap membantu dengan:</p>
+                    <ul>
+                        <li>Analisis keuangan</li>
+                        <li>Saran budget</li>
+                        <li>Tips menabung</li>
+                    </ul>
+                </div>
+                <span class="message-time">Just now</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Suggestions -->
+    <div class="chat-suggestions" id="chatSuggestions">
+        <button class="suggestion-btn" data-message="Bagaimana kondisi keuangan saya?">
+            <i class="fas fa-chart-line"></i> Analisis
+        </button>
+        <button class="suggestion-btn" data-message="Tips menghemat pengeluaran">
+            <i class="fas fa-piggy-bank"></i> Tips Hemat
+        </button>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-container">
+        <form id="chatForm" class="chat-input-form">
+            <div class="chat-input-wrapper">
+                <textarea
+                    id="chatInput"
+                    class="chat-input"
+                    placeholder="Ketik pesan..."
+                    rows="1"
+                    maxlength="1000"
+                ></textarea>
+                <button type="submit" class="chat-send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

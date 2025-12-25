@@ -70,6 +70,7 @@ async function loadDashboardData() {
     }
 
     loadBudgetProgress();
+    loadDashboardInsights();
 }
 
 async function loadBudgetProgress() {
@@ -225,4 +226,155 @@ function loadRecentTransactions(transactions) {
 
 function formatCurrency(amount) {
     return 'IDR ' + amount.toLocaleString('id-ID');
+}
+
+// Load Dashboard Insights Widget
+async function loadDashboardInsights() {
+    const container = document.getElementById('dashboardInsightsContainer');
+    if (!container) return;
+
+    try {
+        const [budgetsRes, transRes, walletsRes] = await Promise.all([
+            APIClient.get('/budgets'),
+            APIClient.get('/transactions'),
+            APIClient.get('/wallets')
+        ]);
+
+        const data = {
+            budgets: budgetsRes.success && Array.isArray(budgetsRes.data) ? budgetsRes.data : [],
+            transactions: transRes.success && Array.isArray(transRes.data) ? transRes.data : [],
+            wallets: walletsRes.success && Array.isArray(walletsRes.data) ? walletsRes.data : []
+        };
+
+        const insights = generateDashboardInsights(data);
+
+        if (insights.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <p>Keuangan Anda dalam kondisi baik! Tidak ada peringatan saat ini.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="dashboard-insights-list">
+                ${insights.slice(0, 3).map(insight => `
+                    <div class="dashboard-insight-item ${insight.type}">
+                        <div class="dashboard-insight-icon ${insight.type}">
+                            <i class="fas ${insight.icon}"></i>
+                        </div>
+                        <div class="dashboard-insight-content">
+                            <div class="dashboard-insight-title">${insight.title}</div>
+                            <div class="dashboard-insight-message">${insight.message}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+    } catch (error) {
+        console.error('Error loading dashboard insights:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Gagal memuat insights.</p>
+            </div>
+        `;
+    }
+}
+
+function generateDashboardInsights(data) {
+    const insights = [];
+    const today = new Date();
+
+    // Check budgets
+    data.budgets.forEach(budget => {
+        const limit = parseFloat(budget.allocated_amount);
+        const startDate = new Date(budget.start_date);
+        const endDate = new Date(budget.end_date);
+
+        const spent = data.transactions.reduce((sum, t) => {
+            const tDate = new Date(t.transaction_date);
+            if (
+                t.category_name === budget.category_name &&
+                t.transaction_type === 'expense' &&
+                tDate >= startDate && tDate <= endDate
+            ) {
+                return sum + parseFloat(t.amount);
+            }
+            return sum;
+        }, 0);
+
+        const percentage = (spent / limit) * 100;
+
+        if (percentage > 100) {
+            insights.push({
+                type: 'critical',
+                icon: 'fa-exclamation-circle',
+                title: `Budget ${budget.category_name} Terlampaui!`,
+                message: `Melebihi budget sebesar IDR ${Math.abs(limit - spent).toLocaleString('id-ID')}`
+            });
+        } else if (percentage > 90) {
+            insights.push({
+                type: 'warning',
+                icon: 'fa-exclamation-triangle',
+                title: `Budget ${budget.category_name} Hampir Habis`,
+                message: `${Math.round(percentage)}% dari budget telah terpakai`
+            });
+        }
+    });
+
+    // Check low wallet balance
+    data.wallets.forEach(wallet => {
+        const balance = parseFloat(wallet.balance);
+        if (balance < 0) {
+            insights.push({
+                type: 'critical',
+                icon: 'fa-wallet',
+                title: `Saldo ${wallet.wallet_name} Negatif!`,
+                message: `Deficit: IDR ${Math.abs(balance).toLocaleString('id-ID')}`
+            });
+        } else if (balance < 100000) {
+            insights.push({
+                type: 'warning',
+                icon: 'fa-wallet',
+                title: `Saldo ${wallet.wallet_name} Rendah`,
+                message: `Saldo: IDR ${balance.toLocaleString('id-ID')}`
+            });
+        }
+    });
+
+    // Check spending ratio
+    const thisMonth = today.getMonth();
+    const thisYear = today.getFullYear();
+
+    const thisMonthTrans = data.transactions.filter(t => {
+        const tDate = new Date(t.transaction_date);
+        return tDate.getMonth() === thisMonth && tDate.getFullYear() === thisYear;
+    });
+
+    const income = thisMonthTrans
+        .filter(t => t.transaction_type === 'income')
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    const expense = thisMonthTrans
+        .filter(t => t.transaction_type === 'expense')
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    if (income > 0 && expense > income * 0.8) {
+        insights.push({
+            type: 'warning',
+            icon: 'fa-balance-scale',
+            title: 'Rasio Pengeluaran Tinggi',
+            message: `${Math.round(expense/income*100)}% pendapatan terpakai bulan ini`
+        });
+    }
+
+    // Sort by priority
+    const priorityOrder = { critical: 0, warning: 1, info: 2, success: 3 };
+    insights.sort((a, b) => priorityOrder[a.type] - priorityOrder[b.type]);
+
+    return insights;
 }

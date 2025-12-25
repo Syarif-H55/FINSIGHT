@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - FINSIGHT</title>
+    <title>Financial Insights - FINSIGHT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css?v=5.0">
@@ -39,7 +39,7 @@
                 <div class="nav-section-title">Menu</div>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="dashboard.html" class="nav-link active" data-tooltip="Dashboard">
+                        <a href="dashboard.html" class="nav-link" data-tooltip="Dashboard">
                             <span class="nav-icon"><i class="fas fa-home"></i></span>
                             <span class="nav-text">Dashboard</span>
                         </a>
@@ -63,7 +63,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="insights.html" class="nav-link" data-tooltip="Insights">
+                        <a href="insights.html" class="nav-link active" data-tooltip="Insights">
                             <span class="nav-icon"><i class="fas fa-lightbulb"></i></span>
                             <span class="nav-text">Insights</span>
                         </a>
@@ -111,133 +111,104 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Top Bar -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" class="search-input" placeholder="Search transactions, wallets...">
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-outline-secondary position-relative" style="border-radius: 10px;">
-                    <i class="fas fa-bell"></i>
-                </button>
-            </div>
-        </div>
-
         <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Dashboard</h1>
-            <p class="page-subtitle">Welcome back! Here's your financial overview</p>
+        <div class="d-flex justify-content-between align-items-center page-header">
+            <div>
+                <h1 class="page-title">Financial Insights</h1>
+                <p class="page-subtitle">Analisis otomatis dan saran untuk keuangan Anda</p>
+            </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Health Score Card -->
         <div class="row g-4 mb-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="stats-card income-card">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stats-label">Total Income</div>
-                            <div class="stats-value" id="totalIncome">IDR 0</div>
-                            <span class="stats-period">This month</span>
+            <div class="col-lg-4">
+                <div class="glass-card health-score-card">
+                    <div class="health-score-header">
+                        <h5><i class="fas fa-heartbeat text-primary-custom me-2"></i>Financial Health Score</h5>
+                    </div>
+                    <div class="health-score-body">
+                        <div class="health-score-circle">
+                            <span class="health-score-value" id="healthScore">--</span>
+                            <span class="health-score-label">/ 100</span>
                         </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-arrow-up"></i>
+                        <div class="health-score-bar-container">
+                            <div class="health-score-bar" id="healthScoreBar"></div>
                         </div>
+                        <div id="healthStatus" class="health-status">Loading...</div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="stats-card expense-card">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stats-label">Total Expense</div>
-                            <div class="stats-value" id="totalExpense">IDR 0</div>
-                            <span class="stats-period">This month</span>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-arrow-down"></i>
+
+            <!-- Summary Stats -->
+            <div class="col-lg-8">
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="glass-card summary-stat-card critical">
+                            <div class="summary-stat-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="summary-stat-value" id="criticalCount">0</div>
+                            <div class="summary-stat-label">Kritis</div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="stats-card balance-card">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stats-label">Total Balance</div>
-                            <div class="stats-value" id="totalBalance">IDR 0</div>
-                            <span class="stats-period">Current balance</span>
+                    <div class="col-6 col-md-3">
+                        <div class="glass-card summary-stat-card warning">
+                            <div class="summary-stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="summary-stat-value" id="warningCount">0</div>
+                            <div class="summary-stat-label">Peringatan</div>
                         </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="glass-card summary-stat-card info">
+                            <div class="summary-stat-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="summary-stat-value" id="infoCount">0</div>
+                            <div class="summary-stat-label">Tips</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="glass-card summary-stat-card success">
+                            <div class="summary-stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="summary-stat-value" id="successCount">0</div>
+                            <div class="summary-stat-label">Baik</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Budget Monitoring -->
+        <!-- Insights List -->
         <div class="glass-card">
             <div class="card-header">
                 <h5>
-                    <i class="fas fa-chart-pie text-primary-custom"></i>
-                    Budget Monitoring
-                </h5>
-                <a href="budgets.html" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
-                    View All <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-            <div class="card-body" id="budgetProgressContainer">
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading budgets...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Financial Insights Widget -->
-        <div class="glass-card mt-4">
-            <div class="card-header">
-                <h5>
                     <i class="fas fa-lightbulb text-primary-custom"></i>
-                    Financial Insights
+                    Semua Insights
                 </h5>
-                <a href="insights.html" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
-                    View All <i class="fas fa-arrow-right ms-1"></i>
-                </a>
             </div>
-            <div class="card-body" id="dashboardInsightsContainer">
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Analyzing your finances...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="glass-card mt-4">
-            <div class="card-header">
-                <h5>
-                    <i class="fas fa-history text-primary-custom"></i>
-                    Recent Transactions
-                </h5>
-                <a href="transactions.html" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
-                    View All <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-            <div class="card-body p-0" id="recentTransactionsContainer">
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading transactions...</p>
+            <div class="card-body">
+                <div class="row g-4" id="insightsContainer">
+                    <!-- Insights loaded here -->
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Menganalisis data keuangan Anda...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/sidebar.js"></script>
-    <script src="../js/dashboard.js"></script>
+    <script src="../js/insights.js"></script>
 </body>
 
 </html>
