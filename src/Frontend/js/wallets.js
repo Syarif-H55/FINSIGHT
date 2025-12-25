@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Check Auth
+    const token = localStorage.getItem('finsight_token');
+    const user = JSON.parse(localStorage.getItem('finsight_user'));
+
+    if (!token || !user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Display User Name in sidebar
+    const userName = document.querySelector('.user-name');
+    const userEmail = document.querySelector('.user-email');
+    if (userName && user.name) {
+        userName.textContent = user.name;
+    }
+    if (userEmail && user.email) {
+        userEmail.textContent = user.email;
+    }
+
     loadWallets();
 
     // Add Wallet Form Handler
@@ -167,30 +186,54 @@ async function loadWallets() {
 
     if (result.success) {
         if (result.data.length === 0) {
-            container.innerHTML = '<div class="col-12 text-center text-muted">No wallets found. Create one to get started!</div>';
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-wallet"></i>
+                        <p>No wallets found. Create one to get started!</p>
+                    </div>
+                </div>
+            `;
             return;
         }
 
         container.innerHTML = result.data.map(wallet => `
-            <div class="col-md-4 mb-3">
-                <div class="card h-100 border-${getBorderColor(wallet.type)}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <h5 class="card-title">${wallet.wallet_name}</h5>
-                            <span class="badge bg-${getBadgeColor(wallet.type)}">${wallet.type.toUpperCase()}</span>
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-card wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-icon ${getWalletIconClass(wallet.type)}">
+                            <i class="fas ${getWalletIcon(wallet.type)}"></i>
                         </div>
-                        <h3 class="card-text mt-3">IDR ${parseFloat(wallet.balance).toLocaleString('id-ID')}</h3>
-                        <p class="text-muted small">Created: ${new Date(wallet.created_at).toLocaleDateString()}</p>
+                        <span class="wallet-type-badge">${wallet.type.toUpperCase()}</span>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0 text-end">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editWallet(${wallet.wallet_id})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteWallet(${wallet.wallet_id})"><i class="fas fa-trash"></i></button>
+                    <div class="wallet-body">
+                        <h4 class="wallet-name">${wallet.wallet_name}</h4>
+                        <p class="wallet-balance">IDR ${parseFloat(wallet.balance).toLocaleString('id-ID')}</p>
+                        <span class="wallet-date">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Created: ${new Date(wallet.created_at).toLocaleDateString('id-ID')}
+                        </span>
+                    </div>
+                    <div class="wallet-actions">
+                        <button class="action-btn edit" onclick="editWallet(${wallet.wallet_id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn delete" onclick="deleteWallet(${wallet.wallet_id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </div>
                 </div>
             </div>
         `).join('');
     } else {
-        container.innerHTML = '<div class="col-12 text-center text-danger">Failed to load wallets.</div>';
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load wallets.</p>
+                </div>
+            </div>
+        `;
     }
 }
 
@@ -221,21 +264,21 @@ async function deleteWallet(id) {
     }
 }
 
-// Helper for UI/UX
-function getBadgeColor(type) {
+// Helper functions for wallet icons
+function getWalletIcon(type) {
     switch (type) {
-        case 'cash': return 'success';
-        case 'bank': return 'primary';
-        case 'ewallet': return 'info';
-        default: return 'secondary';
+        case 'bank': return 'fa-university';
+        case 'ewallet': return 'fa-mobile-alt';
+        case 'cash': return 'fa-money-bill-wave';
+        default: return 'fa-wallet';
     }
 }
 
-function getBorderColor(type) {
+function getWalletIconClass(type) {
     switch (type) {
-        case 'cash': return 'success';
-        case 'bank': return 'primary';
-        case 'ewallet': return 'info';
-        default: return 'secondary';
+        case 'bank': return 'icon-blue';
+        case 'ewallet': return 'icon-cyan';
+        case 'cash': return 'icon-green';
+        default: return 'icon-blue';
     }
 }

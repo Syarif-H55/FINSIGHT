@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budgets - FINSIGHT</title>
+    <title>AI Financial Advisor - FINSIGHT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css?v=5.0">
@@ -57,7 +57,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="budgets.html" class="nav-link active" data-tooltip="Budgets">
+                        <a href="budgets.html" class="nav-link" data-tooltip="Budgets">
                             <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
                             <span class="nav-text">Budgets</span>
                         </a>
@@ -69,7 +69,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="chat.html" class="nav-link" data-tooltip="AI Chat">
+                        <a href="chat.html" class="nav-link active" data-tooltip="AI Chat">
                             <span class="nav-icon"><i class="fas fa-robot"></i></span>
                             <span class="nav-text">AI Chat</span>
                         </a>
@@ -110,78 +110,98 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center page-header">
-            <div>
-                <h1 class="page-title">My Budgets</h1>
-                <p class="page-subtitle">Set and track your spending limits</p>
-            </div>
-            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
-                <i class="fas fa-plus"></i> New Budget
-            </button>
-        </div>
-
-        <!-- Budgets List -->
-        <div class="row g-4" id="budgetsContainer">
-            <!-- Budgets loaded here -->
-            <div class="col-12">
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading budgets...</p>
+    <main class="main-content chat-main">
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h5 class="chat-title">AI Financial Advisor</h5>
+                        <span class="chat-status">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                    </div>
                 </div>
+                <div class="chat-header-actions">
+                    <button class="chat-action-btn" id="clearChatBtn" title="Clear Chat">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Message -->
+                <div class="chat-message ai">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>Halo! Saya adalah AI Financial Advisor Anda. Saya siap membantu Anda dengan:</p>
+                            <ul>
+                                <li>Analisis keuangan pribadi</li>
+                                <li>Saran pengelolaan budget</li>
+                                <li>Tips menabung dan investasi</li>
+                                <li>Perencanaan keuangan</li>
+                            </ul>
+                            <p>Silakan tanyakan apa saja tentang keuangan Anda!</p>
+                        </div>
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button class="suggestion-btn" data-message="Bagaimana kondisi keuangan saya bulan ini?">
+                    <i class="fas fa-chart-line"></i> Analisis Keuangan
+                </button>
+                <button class="suggestion-btn" data-message="Berikan tips untuk menghemat pengeluaran">
+                    <i class="fas fa-piggy-bank"></i> Tips Hemat
+                </button>
+                <button class="suggestion-btn" data-message="Bagaimana cara mengatur budget yang baik?">
+                    <i class="fas fa-tasks"></i> Atur Budget
+                </button>
+                <button class="suggestion-btn" data-message="Apa saran investasi untuk pemula?">
+                    <i class="fas fa-coins"></i> Saran Investasi
+                </button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <form id="chatForm" class="chat-input-form">
+                    <div class="chat-input-wrapper">
+                        <textarea
+                            id="chatInput"
+                            class="chat-input"
+                            placeholder="Ketik pesan Anda..."
+                            rows="1"
+                            maxlength="1000"
+                        ></textarea>
+                        <button type="submit" class="chat-send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="chat-input-info">
+                        <span class="char-count"><span id="charCount">0</span>/1000</span>
+                        <span class="input-hint">Press Enter to send, Shift+Enter for new line</span>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
-
-    <!-- Add Budget Modal -->
-    <div class="modal fade" id="addBudgetModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-chart-pie me-2 text-primary-custom"></i>
-                        Create New Budget
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addBudgetForm">
-                        <div class="mb-3">
-                            <label for="categorySelect" class="form-label">Category</label>
-                            <select class="form-select" id="categorySelect" required>
-                                <!-- Categories Loaded via JS -->
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Limit Amount</label>
-                            <input type="number" class="form-control" id="amount" required min="1"
-                                placeholder="Enter budget limit">
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-save me-2"></i>Set Budget
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/sidebar.js"></script>
-    <script src="../js/budgets.js"></script>
+    <script src="../js/chat.js"></script>
 </body>
 
 </html>
