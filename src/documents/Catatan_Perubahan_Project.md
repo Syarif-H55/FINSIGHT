@@ -52,23 +52,28 @@ Dokumen teknis khusus untuk mata kuliah Sistem Jaringan Komputer yang menjelaska
 Fitur "Static AI" yang menganalisis data keuangan user dan memberikan insight otomatis:
 -   **Backend**:
     -   Pembuatan `InsightController.php` dengan 4 algoritma analisis:
-        1. **Budget Warnings**: Deteksi budget yang hampir/sudah terlampaui (>80% atau >100%)
-        2. **Spending Patterns**: Analisis pola pengeluaran weekend vs weekday
-        3. **Savings Opportunities**: Identifikasi kategori dengan pengeluaran tinggi (>30% total)
-        4. **Unusual Spending**: Deteksi lonjakan pengeluaran bulan ini vs bulan lalu (>20%)
+        1. **Budget Warnings**: Deteksi budget yang hampir/sudah terlampaui.
+        2. **Spending Patterns**: Analisis pola pengeluaran weekend vs weekday.
+        3. **Savings Opportunities**: Identifikasi kategori dengan pengeluaran tinggi.
+        4. **Unusual Spending**: Deteksi lonjakan pengeluaran.
     -   Penambahan rute `GET /insights` di `index.php`.
 -   **Frontend**:
     -   Pembuatan `insights.html` dengan layout card untuk menampilkan insights.
     -   Pembuatan `insights.js` untuk fetch dan render insights secara dinamis.
-    -   Insights dikelompokkan berdasarkan tipe dan diberi warna sesuai severity (danger/warning/info/success).
     -   Penambahan menu "Insights" di sidebar navigasi.
--   **Fitur**:
-    -   Insights di-generate on-the-fly dari data transaksi, budget, dan kategori.
-    -   Tidak memerlukan tabel database tambahan.
-    -   Tombol "Refresh" untuk regenerate insights terbaru.
 
 ## 8. Perbaikan CSS Path pada Insights Page
 -   **Masalah**: Sidebar tidak ter-render dengan styling yang benar pada halaman Insights.
--   **Root Cause**: Path CSS salah - menggunakan `../css/sidebar.css` padahal file berada di `../assets/css/sidebar.css`.
--   **Solusi**: Memperbaiki path CSS di `insights.html` dari `../css/sidebar.css` menjadi `../assets/css/sidebar.css`.
--   **Hasil**: Sidebar sekarang tampil dengan styling yang benar, konsisten dengan halaman lain.
+-   **Solusi**: Memperbaiki path CSS di `insights.html` menjadi `../assets/css/sidebar.css`.
+
+## 9. Penyesuaian Algoritma Insights (Test Data Improvement)
+-   **Masalah**: Insights tidak muncul saat data tes masih sedikit atau belum memenuhi threshold ketat, atau saat user hanya mengisi pengeluaran saja (tanpa pemasukan).
+-   **Solusi**: 
+    -   Menambahkan **Financial Health Summary** yang *selalu* muncul sebagai fallback.
+    -   Menurunkan threshold trigger agar lebih responsif terhadap data testing.
+    -   Menambahkan handling khusus untuk **"Hanya Pengeluaran"** di summary, agar pengguna baru yang belum mencatat pemasukan tetap mendapat notifikasi relevan.
+-   **Hasil**: Halaman Insights lebih robust dan informatif untuk berbagai kondisi data user.
+
+## 10. Debugging Data Integrity
+-   Pembuatan `diagnostic.php` untuk memverifikasi isi database, validitas User ID, dan integritas Foreign Key (hubungan antar tabel).
+-   Alat ini digunakan untuk memastikan data transaksi benar-benar tersimpan di database sebelum dianalisis oleh Insights Engine.
