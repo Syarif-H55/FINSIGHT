@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"c:\\\\Users\\\\LENOVO\\\\Documents\\\\SEMESTER 3\\\\FINSIGHT\\\\src\\\\Frontend\" /s)",
+      "Bash(dir:*)"
+    ]
+  }
+}

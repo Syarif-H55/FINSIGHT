@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Check Auth
+    const token = localStorage.getItem('finsight_token');
+    const user = JSON.parse(localStorage.getItem('finsight_user'));
+
+    if (!token || !user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Display User Name in sidebar
+    const userName = document.querySelector('.user-name');
+    const userEmail = document.querySelector('.user-email');
+    if (userName && user.name) {
+        userName.textContent = user.name;
+    }
+    if (userEmail && user.email) {
+        userEmail.textContent = user.email;
+    }
+
     // Set default dates (Start of month to End of month)
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -48,33 +67,150 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadBudgets() {
     const container = document.getElementById('budgetsContainer');
-    const result = await APIClient.get('/budgets');
 
-    if (result.success) {
-        if (!result.data || result.data.length === 0) {
-            container.innerHTML = '<div class="col-12 text-center text-muted">No active budgets. Set one to track your spending!</div>';
-            return;
-        }
+    try {
+        const [budgetsRes, transRes] = await Promise.all([
+            APIClient.get('/budgets'),
+            APIClient.get('/transactions')
+        ]);
 
-        container.innerHTML = result.data.map(b => `
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title text-primary"><i class="fas fa-wallet me-2"></i>${b.category_name}</h5>
-                            <span class="badge bg-secondary">Until ${new Date(b.end_date).toLocaleDateString()}</span>
+        if (budgetsRes.success) {
+            if (!budgetsRes.data || budgetsRes.data.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>No active budgets. Set one to track your spending!</p>
                         </div>
-                        <h3 class="mb-3">Limit: IDR ${parseFloat(b.allocated_amount).toLocaleString('id-ID')}</h3>
-                        <p class="text-muted small">Period: ${new Date(b.start_date).toLocaleDateString()} - ${new Date(b.end_date).toLocaleDateString()}</p>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0 text-end">
-                         <button class="btn btn-sm btn-outline-danger" onclick="deleteBudget(${b.budget_id})">Delete</button>
+                `;
+                return;
+            }
+
+            const transactions = transRes.success && Array.isArray(transRes.data) ? transRes.data : [];
+
+            container.innerHTML = budgetsRes.data.map(b => {
+                const limit = parseFloat(b.allocated_amount);
+                const startDate = new Date(b.start_date);
+                const endDate = new Date(b.end_date);
+
+                // Calculate spent amount
+                const spent = transactions.reduce((sum, t) => {
+                    const tDate = new Date(t.transaction_date);
+                    if (
+                        t.category_name === b.category_name &&
+                        t.transaction_type === 'expense' &&
+                        tDate >= startDate && tDate <= endDate
+                    ) {
+                        return sum + parseFloat(t.amount);
+                    }
+                    return sum;
+                }, 0);
+
+                const percentage = Math.min((spent / limit) * 100, 100);
+                const remaining = limit - spent;
+
+                // Color Logic
+                let colorClass = 'success';
+                let statusClass = 'status-success';
+                let statusText = 'On Track';
+                if (percentage > 90) {
+                    colorClass = 'danger';
+                    statusClass = 'status-danger';
+                    statusText = 'Over Budget';
+                } else if (percentage > 75) {
+                    colorClass = 'warning';
+                    statusClass = 'status-warning';
+                    statusText = 'Almost There';
+                }
+
+                return `
+                    <div class="col-lg-6">
+                        <div class="glass-card budget-card">
+                            <div class="budget-header">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="category-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="budget-name mb-0">${b.category_name}</h5>
+                                        <span class="budget-period">
+                                            ${startDate.toLocaleDateString('id-ID')} - ${endDate.toLocaleDateString('id-ID')}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="budget-status-badge ${statusClass}">${statusText}</span>
+                            </div>
+
+                            <div class="budget-body">
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <div class="budget-stat">
+                                            <span class="budget-stat-label">Spent</span>
+                                            <span class="budget-stat-value text-${colorClass}">
+                                                IDR ${spent.toLocaleString('id-ID')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <div class="budget-stat">
+                                            <span class="budget-stat-label">Limit</span>
+                                            <span class="budget-stat-value">
+                                                IDR ${limit.toLocaleString('id-ID')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-${colorClass}" role="progressbar"
+                                        style="width: ${percentage}%"
+                                        aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="budget-period">${Math.round(percentage)}% used</span>
+                                    <span class="budget-period ${remaining < 0 ? 'text-danger' : ''}">
+                                        ${remaining >= 0 ? 'Remaining: ' : 'Over by: '}
+                                        IDR ${Math.abs(remaining).toLocaleString('id-ID')}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="budget-footer">
+                                <span class="budget-period">
+                                    <i class="fas fa-calendar-check me-1"></i>
+                                    Ends: ${endDate.toLocaleDateString('id-ID')}
+                                </span>
+                                <button class="action-btn delete" onclick="deleteBudget(${b.budget_id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load budgets.</p>
                     </div>
                 </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading budgets:', error);
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error loading budgets.</p>
+                </div>
             </div>
-        `).join('');
-    } else {
-        container.innerHTML = '<div class="col-12 text-center text-danger">Failed to load budgets.</div>';
+        `;
     }
 }
 
@@ -83,8 +219,12 @@ async function loadCategories() {
     const result = await APIClient.get('/categories');
 
     if (result.success) {
-        // Filter only expense categories for budgeting usually
+        // Filter only expense categories for budgeting
         const filtered = result.data.filter(c => c.type === 'expense');
+        if (filtered.length === 0) {
+            select.innerHTML = '<option value="">No categories available</option>';
+            return;
+        }
         select.innerHTML = filtered.map(c => `
             <option value="${c.category_id}">${c.name}</option>
         `).join('');

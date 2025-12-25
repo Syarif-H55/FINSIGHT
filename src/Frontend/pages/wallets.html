@@ -5,41 +5,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wallets - FINSIGHT</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css?v=3.0">
+    <link rel="stylesheet" href="../assets/css/style.css?v=3.0">
 </head>
 
 <body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <span class="brand-text">FINSIGHT</span>
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Menu</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link" data-tooltip="Dashboard">
+                            <span class="nav-icon"><i class="fas fa-home"></i></span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="wallets.html" class="nav-link active" data-tooltip="Wallets">
+                            <span class="nav-icon"><i class="fas fa-wallet"></i></span>
+                            <span class="nav-text">Wallets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="transactions.html" class="nav-link" data-tooltip="Transactions">
+                            <span class="nav-icon"><i class="fas fa-exchange-alt"></i></span>
+                            <span class="nav-text">Transactions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="budgets.html" class="nav-link" data-tooltip="Budgets">
+                            <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
+                            <span class="nav-text">Budgets</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tooltip="Settings">
+                            <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="login.html" class="nav-link logout-link" data-tooltip="Logout">
+                            <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                            <span class="nav-text">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">User</div>
+                    <div class="user-email">user@finsight.com</div>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <!-- Main Content -->
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>My Wallets</h2>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addWalletModal">
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center page-header">
+            <div>
+                <h1 class="page-title">My Wallets</h1>
+                <p class="page-subtitle">Manage your wallets and track balances</p>
+            </div>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addWalletModal">
                 <i class="fas fa-plus"></i> Add Wallet
             </button>
         </div>
 
         <!-- Wallets Grid -->
-        <div id="walletsContainer" class="row">
+        <div id="walletsContainer" class="row g-4">
             <!-- Wallets will be loaded here -->
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading wallets...</p>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Add Wallet Modal -->
     <div class="modal fade" id="addWalletModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New Wallet</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-wallet me-2 text-primary-custom"></i>
+                        Add New Wallet
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -59,9 +150,12 @@
                         </div>
                         <div class="mb-3">
                             <label for="initialBalance" class="form-label">Initial Balance</label>
-                            <input type="number" class="form-control" id="initialBalance" required value="0">
+                            <input type="number" class="form-control" id="initialBalance" required value="0"
+                                placeholder="Enter initial balance">
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Create Wallet</button>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Create Wallet
+                        </button>
                     </form>
                 </div>
             </div>
@@ -73,7 +167,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Wallet</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2 text-primary-custom"></i>
+                        Edit Wallet
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -95,7 +192,9 @@
                             <label for="editBalance" class="form-label">Balance</label>
                             <input type="number" class="form-control" id="editBalance" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update Wallet</button>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-2"></i>Update Wallet
+                        </button>
                     </form>
                 </div>
             </div>
