@@ -30,9 +30,18 @@ class AuthController {
                 $query = "INSERT INTO user_profiles (user_id, monthly_income, average_expense, risk_appetite, financial_goals) VALUES (:uid, 0, 0, 'moderate', '')";
                 $stmt = $this->db->prepare($query);
                 $stmt->bindParam(':uid', $this->user->user_id);
-                
+
                 if ($stmt->execute()) {
-                    Response::send(true, "User registered successfully.", [], 201);
+                    // Generate token for auto-login after registration
+                    $token = $this->jwt->generateToken($this->user->user_id);
+                    Response::send(true, "User registered successfully.", [
+                        "token" => $token,
+                        "user" => [
+                            "id" => $this->user->user_id,
+                            "name" => $this->user->name,
+                            "email" => $this->user->email
+                        ]
+                    ], 201);
                 } else {
                     // If profile creation fails, consider rolling back user creation or logging an error
                     Response::send(false, "User registered but failed to create profile.", [], 500); // Internal Server Error
