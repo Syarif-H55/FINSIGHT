@@ -30,7 +30,9 @@ services:
       - MYSQL_USER=finsight_user
       - MYSQL_PASSWORD=finsight_pass
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
+      - ./src/database/migrations.sql:/docker-entrypoint-initdb.d/1_migrations.sql
+      - ./src/database/seeds.sql:/docker-entrypoint-initdb.d/2_seeds.sql
       - ./src/database/migrations.sql:/docker-entrypoint-initdb.d/migrations.sql
 
   phpmyadmin:

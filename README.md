@@ -1,84 +1,65 @@
-# FINSIGHT 🚀
+# FINSIGHT - AI-Powered Personal Finance Dashboard
 
-**FINSIGHT** is a modern, AI-powered personal finance dashboard designed to help users track their financial health with ease. It features multi-wallet management, transaction recording, budgeting, and a comprehensive dashboard.
+Project Web Programming FINSIGHT yang bertujuan untuk membantu manajemen keuangan pribadi dengan fitur pencatatan transaksi, budgeting, dan analisis berbasis AI.
 
-## 🛠️ Technology Stack
+## 🚀 Fitur
 
-*   **Backend**: Native PHP 8.1 (RESTful API, MVC Architecture)
-*   **Database**: MySQL 8.0
-*   **Frontend**: HTML5, Vanilla JavaScript, Bootstrap 5
-*   **Infrastructure**: Docker & Docker Compose
-*   **Security**: JWT Authentication, Password Hashing
+-   **Dashboard Ringkasan**: Melihat total saldo, pemasukan, dan pengeluaran bulan ini.
+-   **Manajemen Dompet (Wallets)**: Mendukung multiple wallets (e.g., Cash, Bank, E-Wallet) dengan saldo terpisah.
+-   **Pencatatan Transaksi**: Catat pemasukan dan pengeluaran dengan kategori dan icon.
+-   **Transfer Antar Dompet**: Pindahkan saldo antar rekening dengan mudah.
+-   **Budgeting**: Atur batasan pengeluaran per kategori agar tidak boros.
+-   **Financial Insights**: Analisis otomatis (Rule-Based) untuk memberikan peringatan budget dan saran hemat.
+-   **Authentication**: Login dan Register aman dengan JWT.
 
-## ✨ Features Implemented
+## 🛠️ Tech Stack
 
-### Phase 1: Foundation
-*   ✅ **User Authentication**: Secure Register & Login using JWT.
-*   ✅ **Project Structure**: Modular Backend (MVC) and Frontend separation.
-*   ✅ **Database Schema**: Optimized tables for Users, Wallets, Transactions, and Budgets.
+-   **Frontend**: HTML5, CSS3, JavaScript (Vanilla), Bootstrap 5.
+-   **Backend**: PHP 8.1 (Native MVC Pattern).
+-   **Database**: MySQL 8.0.
+-   **Infrastructure**: Docker & Docker Compose.
 
-### Phase 2: Core Features
-*   ✅ **Dashboard**: Real-time summary of Total Balance, Income vs Expense, and Budget Monitoring.
-*   ✅ **Wallets Management**: Create, Edit, and Delete wallets (Bank, E-Wallet, Cash).
-*   ✅ **Transactions**: Record Income and Expenses with automatic balance updates (ACID compliant).
-*   ✅ **Budget System**: Set monthly spending limits per category and monitor progress via visual bars.
+## 📦 Cara Install & Jalanankan (Untuk Pengguna Baru)
 
-### Phase 3: AI Integration (Coming Soon)
-*   🤖 **Financial Advisor**: AI-powered chat interface to analyze spending habits and provide recommendations.
-
-## 🚀 Getting Started
-
-### Prerequisites
-*   Docker Desktop installed and running.
-
-### Installation
-
-1.  **Clone the Repository**
+1.  **Clone Repository**
     ```bash
     git clone https://github.com/HilmanAlDwinov/FINSIGHT.git
-    cd FINSIGHT
+    cd FINSIGHT-1
     ```
 
-2.  **Setup Environment**
-    Ensure the `.env` file is present (or copy from `.env.example` if available).
-    ```env
-    DB_HOST=mysql
-    DB_NAME=finsight_db
-    DB_USER=finsight_user
-    DB_PASSWORD=finsight_pass
-    JWT_SECRET=your_secret_key
-    OPENAI_API_KEY=your_openai_key
-    ```
-
-3.  **Run with Docker**
+2.  **Jalankan dengan Docker**
+    Pastikan Docker Desktop sudah menyala.
     ```bash
-    docker-compose up --build -d
+    docker-compose up -d --build
     ```
+    *Docker akan otomatis membuat database dan mengisi data awal.*
 
-4.  **Access the Application**
-    *   **Frontend**: [http://localhost:8000/frontend/pages/login.html](http://localhost:8000/frontend/pages/login.html)
-    *   **Backend API**: [http://localhost:8000/backend/index.php](http://localhost:8000/backend/index.php)
-    *   **Database (phpMyAdmin)**: [http://localhost:8081](http://localhost:8081)
+3.  **Akses Aplikasi**
+    Buka browser dan kunjungi: `http://localhost:8000`
 
-## 📂 Project Structure
+## ❓ Troubleshooting
 
-```
-FINSIGHT/
-├── src/
-│   ├── backend/
-│   │   ├── config/         # Database connection
-│   │   ├── controllers/    # Logic (Auth, Wallet, Transaction, Budget)
-│   │   ├── models/         # Database interactions
-│   │   ├── middleware/     # JWT Auth protection
-│   │   └── index.php       # Main API Router
-│   ├── frontend/
-│   │   ├── css/            # Styles
-│   │   ├── js/             # API client & Page logic
-│   │   └── pages/          # HTML Views (Login, Dashboard, Wallets...)
-│   └── database/           # SQL Migrations & Seeds
-├── docker-compose.yml
-└── Dockerfile
+### Masalah: "Invalid Credentials" atau Data User Tidak Masuk
+Jika Anda baru clone dan mengalami error saat register atau login, kemungkinan besar database belum terinialisasi dengan benar (tabel kosong).
+
+**Solusi:**
+Hapus volume database lama dan jalankan ulang agar script migrasi berjalan.
+
+```bash
+# 1. Matikan docker dan HAPUS volume (-v)
+docker-compose down -v
+
+# 2. Jalankan ulang
+docker-compose up -d --build
 ```
 
-## 🤝 Contribution
-Developed by **Hilman Al Dwinov** & **Google DeepMind Antigravity**.
+Setelah itu coba Register akun baru lagi. Data seharusnya sudah bisa tersimpan.
+
+### Cek Status Database
+Anda bisa menggunakan alat diagnosa bawaan untuk memastikan database sehat:
+Akses: `http://localhost:8000/backend/diagnostic.php`
+
+---
+**Tim Pengembang**:
+- Syarif Hidayatullah
+- Hilman Al Dwinov
